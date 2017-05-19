@@ -5,6 +5,7 @@ import datetime
 import pytz
 import hashlib
 import threading
+import requests
 
 itchat.set_logging(loggingLevel=logging.DEBUG)
 
@@ -12,7 +13,7 @@ itchat.set_logging(loggingLevel=logging.DEBUG)
 class MainHandler:
     def __init__(self):
         self.at_handler = {}
-        self.slash_handler = {}
+        self.slash_handler = None
 
     def prepare(self):
         @itchat.msg_register(itchat.content.TEXT, False, True)
@@ -24,16 +25,15 @@ class MainHandler:
                     return self.slash_handler[command[0]](msg, command[1:])
             if msg.isAt:
                 command = str.replace(msg.Content, "@trangent ", "")
-                command = command.split()
                 print(command)
-                if command[0] in self.at_handler:
-                    return self.at_handler[command[0]](msg, command[1:])
+                if self.slash_handler:
+                    self.slash_handler(msg, command)
 
     def register_at(self, key, func):
         self.at_handler[key] = func
 
     def register_slash(self, key, func):
-        self.slash_handler[key] = func
+        self.slash_handler = func
 
     def run(self):
         self.prepare()
@@ -185,10 +185,40 @@ class ZhangZheHanlder:
         return random.choice(self.quota)
 
 
+class TuLingHandler:
+    def __init__(self, main_handler: MainHandler):
+        self.key = open("tuling.key").read()
+        self.api = "http://www.tuling123.com/openapi/api"
+        main_handler.register_at(self.handler)
+
+    def handler(self, msg, command=None):
+        if not command:
+            return
+        url = self.api
+        d = {
+            "key": self.key,
+            "info": command,
+            "loc": "北京市北京大学",
+            "userid": msg.FromUserName
+        }
+        response = requests.post(url, data=d)
+        response = response.json()
+        if response.code == 100000:
+            return response.text
+        elif response.code == 200000:
+            return "%s, url: %s" % (response.text, response.url)
+        elif response.code == 302000:
+            text = response.text + "\n"
+            for v in response.list:
+                text += '%s: %s \n' % (v['article'], v['detailurl'])
+            return text
+
+
 if __name__ == '__main__':
     h = MainHandler()
     RandomHandler(h)
     EatWhatHandler(h)
     FFFHandler(h)
     ZhangZheHanlder(h)
+    TuLingHandler(h)
     h.run()
