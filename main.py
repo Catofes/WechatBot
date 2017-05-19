@@ -171,9 +171,24 @@ class FFFHandler:
             return text
 
 
+class ZhangZheHanlder:
+    def __init__(self, main_handler: MainHandler):
+        self.quota = []
+        f = open("Zhangzhe.txt", "r")
+        for l in f:
+            self.quota.append(l)
+        f.close()
+        main_handler.register_slash("+1", self.handler)
+        main_handler.register_at("+1", self.handler)
+
+    def handler(self, msg, command=None):
+        return random.choice(self.quota)
+
+
 if __name__ == '__main__':
     h = MainHandler()
     RandomHandler(h)
     EatWhatHandler(h)
     FFFHandler(h)
+    ZhangZheHanlder(h)
     h.run()
