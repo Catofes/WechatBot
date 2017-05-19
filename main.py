@@ -4,6 +4,7 @@ import logging
 import datetime
 import pytz
 import hashlib
+import threading
 
 itchat.set_logging(loggingLevel=logging.DEBUG)
 
@@ -95,6 +96,65 @@ class EatWhatHandler:
             return "今天晚上吃： %s" % self.get_one("%s-%s-%s %s" % (t.year, t.month, t.day, "晚饭"))
         else:
             return "你想长胖嘛？"
+
+
+class FFFHandler:
+    def __init__(self, main_handler: MainHandler):
+        self.lock = threading.RLock()
+        self.people = []
+        self.flavour = []
+        main_handler.register_slash("fff.install", self.fff_install_handler)
+        main_handler.register_slash("fff.add", self.fff_add_handler)
+        main_handler.register_slash("fff.status", self.fff_status_handler)
+        main_handler.register_slash("fff.ignite", self.fff_ignite_handler)
+        main_handler.register_slash("fff.water", self.fff_water_handler)
+
+    def fff_install_handler(self, msg, command=None):
+        if len(command) <= 0:
+            return "你要烧谁？"
+        else:
+            self.lock.acquire()
+            for v in command:
+                self.people.append(v)
+            text = "你将 %s 绑上火刑架" % " ".join(command)
+            self.lock.release()
+            return text
+
+    def fff_add_handler(self, msg, command=None):
+        if len(command) <= 0:
+            return "你要添加什么调料？"
+        else:
+            self.lock.acquire()
+            for v in command:
+                self.flavour.append(v)
+            text = "你将 %s 加入了火刑架" % " ".join(command)
+            self.lock.release()
+            return text
+
+    def fff_status_handler(self, msg, command=None):
+        if not self.people:
+            return "火柱上什么都没有"
+        elif self.flavour:
+            return "在 %s 的环绕中， %s 熊熊燃烧！" % (" ".join(self.flavour), " ".join(self.people))
+        else:
+            return "%s 在熊熊燃烧！" % " ".join(self.people)
+
+    def fff_ignite_handler(self, msg, command=None):
+        if not self.people:
+            return "火刑架上空空如也。"
+        else:
+            return "%s 烧起来了，此处应该有掌声！" % (" ".join(self.people))
+
+    def fff_water_handler(self, msg, command=None):
+        if not self.people:
+            return "火刑架上空空如也。"
+        else:
+            self.lock.acquire()
+            text = "火被扑灭了， %s 被救了下来。" % (" ".join(self.people))
+            self.people = []
+            self.flavour = []
+            self.lock.release()
+            return text
 
 
 if __name__ == '__main__':
