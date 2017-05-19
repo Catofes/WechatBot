@@ -199,13 +199,13 @@ class TuLingHandler:
         }
         response = requests.post(url, data=d)
         response = response.json()
-        if response.code == 100000:
-            return response.text
-        elif response.code == 200000:
-            return "%s, url: %s" % (response.text, response.url)
-        elif response.code == 302000:
-            text = response.text + "\n"
-            for v in response.list:
+        if response["code"] == 100000:
+            return response["text"]
+        elif response["code"] == 200000:
+            return "%s, url: %s" % (response["text"], response["url"])
+        elif response["code"] == 302000:
+            text = response["text"] + "\n"
+            for v in response["list"]:
                 text += '%s: %s \n' % (v['article'], v['detailurl'])
             return text
 
