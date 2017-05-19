@@ -161,4 +161,5 @@ if __name__ == '__main__':
     h = MainHandler()
     RandomHandler(h)
     EatWhatHandler(h)
+    FFFHandler(h)
     h.run()
