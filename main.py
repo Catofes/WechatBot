@@ -21,13 +21,14 @@ class MainHandler:
                 command = msg.Content[1:].split()
                 if len(command) <= 0:
                     return
-                if msg.Content[1:] in self.slash_handler:
+                if command[0] in self.slash_handler:
                     return self.slash_handler[command[0]](msg, command[1:])
             if msg.isAt:
                 command = str.replace(msg.Content, "@trangent ", "")
+                command = command.split()
                 print(command)
-                if command in self.at_handler:
-                    return self.at_handler[command](msg)
+                if command[0] in self.at_handler:
+                    return self.at_handler[command[0]](msg, command[1:])
 
     def register_at(self, key, func):
         self.at_handler[key] = func
@@ -47,7 +48,7 @@ class RandomHandler:
         main_handler.register_slash("random", self.handler)
 
     def handler(self, msg, command=None):
-        if len(command) > 0:
+        if command:
             return "%s" % random.randint(0, int(command[0]))
         else:
             return "%s" % random.randint(0, 100)
@@ -110,7 +111,7 @@ class FFFHandler:
         main_handler.register_slash("fff.water", self.fff_water_handler)
 
     def fff_install_handler(self, msg, command=None):
-        if len(command) <= 0:
+        if not command:
             return "你要烧谁？"
         else:
             self.lock.acquire()
@@ -121,7 +122,7 @@ class FFFHandler:
             return text
 
     def fff_add_handler(self, msg, command=None):
-        if len(command) <= 0:
+        if not command:
             return "你要添加什么调料？"
         else:
             self.lock.acquire()
