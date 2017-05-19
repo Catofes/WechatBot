@@ -12,8 +12,8 @@ itchat.set_logging(loggingLevel=logging.DEBUG)
 
 class MainHandler:
     def __init__(self):
-        self.at_handler = {}
-        self.slash_handler = None
+        self.at_handler = []
+        self.slash_handler = {}
 
     def prepare(self):
         @itchat.msg_register(itchat.content.TEXT, False, True)
@@ -27,13 +27,13 @@ class MainHandler:
                 command = str.replace(msg.Content, "@trangent ", "")
                 print(command)
                 if self.slash_handler:
-                    self.slash_handler(msg, command)
+                    self.at_handler(msg, command)
 
-    def register_at(self, key, func):
-        self.at_handler[key] = func
+    def register_at(self, func):
+        self.at_handler = func
 
-    def register_slash(self, func):
-        self.slash_handler = func
+    def register_slash(self, key, func):
+        self.slash_handler[key] = func
 
     def run(self):
         self.prepare()
@@ -43,7 +43,6 @@ class MainHandler:
 
 class RandomHandler:
     def __init__(self, main_handler: MainHandler):
-        main_handler.register_at("random", self.handler)
         main_handler.register_slash("random", self.handler)
 
     def handler(self, msg, command=None):
@@ -70,8 +69,6 @@ class EatWhatHandler:
         for k, v in self.refectory.items():
             t += float(v)
         self.refectory = {k: float(v) / t for k, v in self.refectory.items()}
-        main_handler.register_at("eat", self.handler)
-        main_handler.register_at("吃啥", self.handler)
         main_handler.register_slash("eat", self.handler)
         main_handler.register_slash("吃啥", self.handler)
 
@@ -179,7 +176,6 @@ class ZhangZheHanlder:
             self.quota.append(l)
         f.close()
         main_handler.register_slash("+1s", self.handler)
-        main_handler.register_at("+1s", self.handler)
 
     def handler(self, msg, command=None):
         return random.choice(self.quota)
