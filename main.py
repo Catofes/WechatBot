@@ -19,8 +19,7 @@ class MainHandler:
         def random_reply(msg):
             if msg.Content and msg.Content[0] == "/":
                 command = msg.Content[1:].split()
-                if len(command) <= 0:
-                    return
+                print(command)
                 if command[0] in self.slash_handler:
                     return self.slash_handler[command[0]](msg, command[1:])
             if msg.isAt:
