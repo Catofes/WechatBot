@@ -32,7 +32,7 @@ class MainHandler:
     def register_at(self, key, func):
         self.at_handler[key] = func
 
-    def register_slash(self, key, func):
+    def register_slash(self, func):
         self.slash_handler = func
 
     def run(self):
