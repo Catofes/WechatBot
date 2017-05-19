@@ -24,7 +24,7 @@ class MainHandler:
                 if command[0] in self.slash_handler:
                     return self.slash_handler[command[0]](msg, command[1:])
             if msg.isAt:
-                command = str.replace(msg.Content, "@trangent ", "")
+                command = str.replace(msg.Content, "@trangent\u2005", "")
                 print(command)
                 if self.slash_handler:
                     return self.at_handler(msg, command)
