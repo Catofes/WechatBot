@@ -103,6 +103,7 @@ class FFFHandler:
         self.lock = threading.RLock()
         self.people = []
         self.flavour = []
+        self.on_fire = False
         main_handler.register_slash("fff.install", self.fff_install_handler)
         main_handler.register_slash("fff.add", self.fff_add_handler)
         main_handler.register_slash("fff.status", self.fff_status_handler)
@@ -112,6 +113,8 @@ class FFFHandler:
     def fff_install_handler(self, msg, command=None):
         if not command:
             return "你要烧谁？"
+        elif self.on_fire:
+            return "火刑架已经烧起来了。"
         else:
             self.lock.acquire()
             for v in command:
@@ -123,6 +126,8 @@ class FFFHandler:
     def fff_add_handler(self, msg, command=None):
         if not command:
             return "你要添加什么调料？"
+        elif self.on_fire:
+            return "火刑架已经烧起来了。"
         else:
             self.lock.acquire()
             for v in command:
@@ -132,24 +137,33 @@ class FFFHandler:
             return text
 
     def fff_status_handler(self, msg, command=None):
-        if not self.people:
-            return "火柱上什么都没有"
+        if not self.on_fire:
+            if not self.people:
+                return "火刑架上什么都没有"
+            else:
+                return "火刑架上的 %s 正在哀嚎。" % " ".join(self.people)
         elif self.flavour:
             return "在 %s 的环绕中， %s 熊熊燃烧！" % (" ".join(self.flavour), " ".join(self.people))
         else:
             return "%s 在熊熊燃烧！" % " ".join(self.people)
 
     def fff_ignite_handler(self, msg, command=None):
-        if not self.people:
-            return "火刑架上空空如也。"
-        else:
-            return "%s 烧起来了，此处应该有掌声！" % (" ".join(self.people))
-
-    def fff_water_handler(self, msg, command=None):
-        if not self.people:
+        if self.on_fire:
+            return "火刑架已经烧起来了"
+        elif not self.people:
             return "火刑架上空空如也。"
         else:
             self.lock.acquire()
+            self.on_fire = True
+            self.lock.release()
+            return "%s 烧起来了，此处应该有掌声！" % (" ".join(self.people))
+
+    def fff_water_handler(self, msg, command=None):
+        if not self.on_fire:
+            return "火刑架上空空如也。"
+        else:
+            self.lock.acquire()
+            self.on_fire = False
             text = "火被扑灭了， %s 被救了下来。" % (" ".join(self.people))
             self.people = []
             self.flavour = []
