@@ -12,7 +12,7 @@ itchat.set_logging(loggingLevel=logging.DEBUG)
 
 class MainHandler:
     def __init__(self):
-        self.at_handler = []
+        self.at_handler = None
         self.slash_handler = {}
 
     def prepare(self):
@@ -27,7 +27,7 @@ class MainHandler:
                 command = str.replace(msg.Content, "@trangent ", "")
                 print(command)
                 if self.slash_handler:
-                    self.at_handler(msg, command)
+                    return self.at_handler(msg, command)
 
     def register_at(self, func):
         self.at_handler = func
