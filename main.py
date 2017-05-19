@@ -178,8 +178,8 @@ class ZhangZheHanlder:
         for l in f:
             self.quota.append(l)
         f.close()
-        main_handler.register_slash("+1", self.handler)
-        main_handler.register_at("+1", self.handler)
+        main_handler.register_slash("+1s", self.handler)
+        main_handler.register_at("+1s", self.handler)
 
     def handler(self, msg, command=None):
         return random.choice(self.quota)
