@@ -183,7 +183,7 @@ class ZhangZheHanlder:
 
 class TuLingHandler:
     def __init__(self, main_handler: MainHandler):
-        self.key = open("tuling.key").read()
+        self.key = open("tuling.key").read().strip()
         self.api = "http://www.tuling123.com/openapi/api"
         main_handler.register_at(self.handler)
 
@@ -199,6 +199,7 @@ class TuLingHandler:
         }
         response = requests.post(url, data=d)
         response = response.json()
+        print(response)
         if response["code"] == 100000:
             return response["text"]
         elif response["code"] == 200000:
