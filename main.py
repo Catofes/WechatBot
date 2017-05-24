@@ -83,13 +83,13 @@ class EatWhatHandler:
 
     def handler(self, msg, command=None):
         t = datetime.datetime.now(tz=pytz.timezone('Asia/Shanghai'))
-        if 2 < t.hour < 6:
+        if 2 <= t.hour < 6:
             return "半夜饿了嘛？ 忍住！"
-        elif 6 < t.hour < 10:
+        elif 6 <= t.hour < 10:
             return "早饭我不管。"
-        elif 10 < t.hour < 14:
+        elif 10 <= t.hour < 14:
             return "我决定了，今天中午吃： %s" % self.get_one("%s-%s-%s %s" % (t.year, t.month, t.day, "午饭"))
-        elif 14 < t.hour < 19:
+        elif 14 <= t.hour < 19:
             return "今天晚上吃： %s" % self.get_one("%s-%s-%s %s" % (t.year, t.month, t.day, "晚饭"))
         else:
             return "你想长胖嘛？"
@@ -157,7 +157,7 @@ class FFFHandler:
 
     def fff_water_handler(self, msg, command=None):
         if not self.on_fire:
-            return "火刑架上空空如也。"
+            return "火刑架还没点燃。"
         else:
             self.lock.acquire()
             self.on_fire = False
