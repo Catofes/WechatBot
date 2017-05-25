@@ -220,4 +220,4 @@ if __name__ == '__main__':
     FFFHandler(h)
     ZhangZheHanlder(h)
     TuLingHandler(h)
-    h.start()
+    h.run()
