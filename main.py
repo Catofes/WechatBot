@@ -6,7 +6,7 @@ import pytz
 import hashlib
 import threading
 import requests
-from py_daemon.py_daemon import Daemon
+from daemon import Daemon
 
 itchat.set_logging(loggingLevel=logging.DEBUG)
 
