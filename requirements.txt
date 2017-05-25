@@ -1,0 +1,3 @@
+py_daemon==0.1.2
+itchat==1.3.6
+pytz

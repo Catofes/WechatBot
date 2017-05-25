@@ -6,12 +6,14 @@ import pytz
 import hashlib
 import threading
 import requests
+from py_daemon.py_daemon import Daemon
 
 itchat.set_logging(loggingLevel=logging.DEBUG)
 
 
-class MainHandler:
-    def __init__(self):
+class MainHandler(Daemon):
+    def __init__(self, pid_file):
+        super(MainHandler, self).__init__(pid_file)
         self.at_handler = None
         self.slash_handler = {}
 
@@ -212,10 +214,10 @@ class TuLingHandler:
 
 
 if __name__ == '__main__':
-    h = MainHandler()
+    h = MainHandler("./bot.pid")
     RandomHandler(h)
     EatWhatHandler(h)
     FFFHandler(h)
     ZhangZheHanlder(h)
     TuLingHandler(h)
-    h.run()
+    h.start()
